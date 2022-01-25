@@ -46,3 +46,9 @@ void fillTransform(vecmem::data::jagged_vector_view<int> vec);
 /// Function transforming the elements of an array of vectors
 void arrayTransform(
     vecmem::static_array<vecmem::data::vector_view<int>, 4> data);
+
+void int_buffer_test(vecmem::data::vector_view<int> vec);
+
+void uint_buffer_test(vecmem::data::vector_view<unsigned int> vec);
+
+void ulong_buffer_test(vecmem::data::vector_view<unsigned long> vec);

@@ -35,9 +35,15 @@ __global__ void linearTransformKernel(
     const vecmem::const_device_vector<int> inputvec(input);
     vecmem::device_vector<int> outputvec(output);
 
+    outputvec.clear();
+    int original_size = outputvec.size();
+    // outputvec.resize(1);
+    outputvec.resize(original_size);
+
     // Perform the linear transformation.
     outputvec.at(i) =
         inputvec.at(i) * constantarray1.at(0) + vecmem::get<1>(constantarray2);
+
     return;
 }
 
@@ -228,6 +234,57 @@ void arrayTransform(
     // Launch the kernel.
     const dim3 dimensions(4u, 4u);
     arrayTransformKernel<<<1, dimensions>>>(data);
+
+    // Check whether it succeeded to run.
+    VECMEM_CUDA_ERROR_CHECK(cudaGetLastError());
+    VECMEM_CUDA_ERROR_CHECK(cudaDeviceSynchronize());
+}
+
+__global__ void int_buffer_test_kernel(
+    vecmem::data::vector_view<int> vec_data) {
+
+    vecmem::device_vector<int> vec(vec_data);
+
+    vec.push_back(0);
+}
+
+void int_buffer_test(vecmem::data::vector_view<int> vec) {
+
+    int_buffer_test_kernel<<<1, 1>>>(vec);
+
+    // Check whether it succeeded to run.
+    VECMEM_CUDA_ERROR_CHECK(cudaGetLastError());
+    VECMEM_CUDA_ERROR_CHECK(cudaDeviceSynchronize());
+}
+
+__global__ void uint_buffer_test_kernel(
+    vecmem::data::vector_view<unsigned int> vec_data) {
+
+    vecmem::device_vector<unsigned int> vec(vec_data);
+
+    vec.push_back(0);
+}
+
+void uint_buffer_test(vecmem::data::vector_view<unsigned int> vec) {
+
+    uint_buffer_test_kernel<<<1, 1>>>(vec);
+
+    // Check whether it succeeded to run.
+    VECMEM_CUDA_ERROR_CHECK(cudaGetLastError());
+    VECMEM_CUDA_ERROR_CHECK(cudaDeviceSynchronize());
+}
+
+__global__ void ulong_buffer_test_kernel(
+    vecmem::data::vector_view<unsigned long> vec_data) {
+
+    vecmem::device_vector<unsigned long> vec(vec_data);
+
+    vec.push_back(0);
+}
+
+void ulong_buffer_test(vecmem::data::vector_view<unsigned long> vec) {
+
+    ulong_buffer_test_kernel<<<1, 1>>>(vec);
 
     // Check whether it succeeded to run.
     VECMEM_CUDA_ERROR_CHECK(cudaGetLastError());
