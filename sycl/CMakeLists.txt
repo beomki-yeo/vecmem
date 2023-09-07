@@ -4,13 +4,19 @@
 #
 # Mozilla Public License Version 2.0
 
-# Enable SYCL as a language.
-enable_language( SYCL )
+if( VECMEM_BUILD_SYCL_LIBRARY )
+   # Enable SYCL as a language.
+   enable_language( SYCL )
 
-# Project include(s).
-include( vecmem-compiler-options-cpp )
-include( vecmem-compiler-options-sycl )
-include( vecmem-check-sycl-code-compiles )
+   # Project include(s).
+   include( vecmem-compiler-options-cpp )
+   include( vecmem-compiler-options-sycl )
+   include( vecmem-check-sycl-code-compiles )
+endif()
+
+if( VECMEM_BUILD_SYCL_FPGA_LIBRARY )
+   include( vecmem-compiler-options-sycl-fpga )
+endif()
 
 # Set up the build of the VecMem SYCL library.
 vecmem_add_library( vecmem_sycl sycl
@@ -34,11 +40,14 @@ vecmem_add_library( vecmem_sycl sycl
    "src/utils/sycl/get_queue.sycl"
    "src/utils/sycl/opaque_queue.hpp" )
 target_link_libraries( vecmem_sycl PUBLIC vecmem::core )
+set_target_properties( vecmem_sycl PROPERTIES LINKER_LANGUAGE CXX)   
 
 # Hide the library's symbols by default.
 set_target_properties( vecmem_sycl PROPERTIES
    CXX_VISIBILITY_PRESET  "hidden"
    SYCL_VISIBILITY_PRESET "hidden" )
+
+if( VECMEM_BUILD_SYCL_LIBRARY )
 
 # Check if assertions work out of the box in the build.
 vecmem_check_sycl_code_compiles( VECMEM_HAVE_SYCL_ASSERT
@@ -92,6 +101,8 @@ if( VECMEM_HAVE_SYCL_LOCAL_ACCESSOR )
       VECMEM_HAVE_SYCL_LOCAL_ACCESSOR )
 endif()
 
+endif()
+
 # Test the public headers of vecmem::sycl.
 if( BUILD_TESTING AND VECMEM_BUILD_TESTING )
    file( GLOB_RECURSE vecmem_sycl_public_headers
@@ -99,3 +110,4 @@ if( BUILD_TESTING AND VECMEM_BUILD_TESTING )
       "include/*/*.hpp" )
    vecmem_test_public_headers( vecmem_sycl ${vecmem_sycl_public_headers} )
 endif()
+

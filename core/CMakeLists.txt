@@ -5,8 +5,12 @@
 # Mozilla Public License Version 2.0
 
 # Project include(s).
-include( vecmem-compiler-options-cpp )
-include( vecmem-check-sycl-code-compiles )
+#include( vecmem-compiler-options-cpp )
+#include( vecmem-check-sycl-code-compiles )
+
+if( VECMEM_BUILD_SYCL_FPGA_LIBRARY )
+   include( vecmem-compiler-options-sycl-fpga )
+endif()
 
 # Set up the build of the VecMem core library.
 vecmem_add_library( vecmem_core core
@@ -101,6 +105,7 @@ vecmem_add_library( vecmem_core core
 # Hide the library's symbols by default.
 set_target_properties( vecmem_core PROPERTIES
    CXX_VISIBILITY_PRESET "hidden" )
+set_target_properties( vecmem_core PROPERTIES LINKER_LANGUAGE CXX)   
 
 # Generate a version header for the project.
 configure_file( "cmake/version.hpp.in"
@@ -216,7 +221,7 @@ check_cxx_source_compiles( "
    #include <cstddef>
    int main() {
       (void)_lzcnt_u64(static_cast<std::size_t>(1UL));
-      return 0;
+      2return 0;
    }
    " VECMEM_HAVE_LZCNT_U64 )
 if( VECMEM_HAVE_LZCNT_U64 )

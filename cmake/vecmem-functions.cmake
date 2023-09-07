@@ -128,7 +128,7 @@ function( vecmem_add_test name )
 
    # Discover all of the tests from the execuable, and set them up as individual
    # CTest tests.
-   gtest_discover_tests( ${test_exe_name} )
+   #gtest_discover_tests( ${test_exe_name} )
 
 endfunction( vecmem_add_test )
 

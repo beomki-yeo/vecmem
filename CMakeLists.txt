@@ -6,6 +6,22 @@
 
 # Set up the project.
 cmake_minimum_required( VERSION 3.10 )
+
+set(CMAKE_CXX_COMPILER icpx)
+
+if (VECMEM_BUILD_SYCL_FPGA_LIBRARY)
+   if(UNIX)
+      # Direct CMake to use icpx rather than the default C++ compiler/linker
+      set(CMAKE_CXX_COMPILER icpx)
+   else() # Windows
+      # Force CMake to use icx-cl rather than the default C++ compiler/linker 
+      # (needed on Windows only)
+      include (CMakeForceCompiler)
+      CMAKE_FORCE_CXX_COMPILER (icx-cl IntelDPCPP)
+      include (Platform/Windows-Clang)
+   endif()
+endif()
+
 project( vecmem VERSION 0.27.0 LANGUAGES CXX )
 
 # Standard CMake include(s).
@@ -42,7 +58,7 @@ endif()
 if( VECMEM_BUILD_HIP_LIBRARY )
    add_subdirectory( hip )
 endif()
-if( VECMEM_BUILD_SYCL_LIBRARY )
+if( VECMEM_BUILD_SYCL_LIBRARY OR VECMEM_BUILD_SYCL_FPGA_LIBRARY )
    add_subdirectory( sycl )
 endif()
 
@@ -54,9 +70,10 @@ endif()
 # Set up the benchmarks.
 option(VECMEM_BUILD_BENCHMARKING "Build the benchmarks of VecMem" OFF)
 if(VECMEM_BUILD_BENCHMARKING)
-   add_subdirectory(benchmarks)
+   #add_subdirectory(benchmarks)
 endif()
 
+if (FALSE)
 # Set up the packaging of the project.
 include( vecmem-packaging )
 
@@ -84,4 +101,5 @@ if( DOXYGEN_FOUND )
    doxygen_add_docs( vecmem_docs
       "${CMAKE_CURRENT_SOURCE_DIR}"
       COMMENT "Generating Doxygen pages" )
+endif()
 endif()

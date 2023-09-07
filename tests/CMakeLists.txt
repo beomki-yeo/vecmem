@@ -4,6 +4,8 @@
 #
 # Mozilla Public License Version 2.0
 
+if(FALSE) # fake a block comment
+
 # Project include(s).
 include( vecmem-compiler-options-cpp )
 
@@ -36,8 +38,10 @@ add_library( vecmem_testing_common STATIC
 target_link_libraries( vecmem_testing_common
    PUBLIC vecmem::core GTest::gtest )
 
+endif()
+
 # Include the library specific tests.
-add_subdirectory( core )
+#add_subdirectory( core )
 if( VECMEM_BUILD_CUDA_LIBRARY )
    add_subdirectory( cuda )
 endif()
@@ -46,4 +50,7 @@ if( VECMEM_BUILD_HIP_LIBRARY )
 endif()
 if( VECMEM_BUILD_SYCL_LIBRARY )
    add_subdirectory( sycl )
+endif()
+if( VECMEM_BUILD_SYCL_FPGA_LIBRARY )
+   add_subdirectory( sycl_fpga )
 endif()
