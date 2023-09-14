@@ -14,33 +14,36 @@ if( VECMEM_BUILD_SYCL_LIBRARY )
    include( vecmem-check-sycl-code-compiles )
 endif()
 
-if( VECMEM_BUILD_SYCL_FPGA_LIBRARY )
-   include( vecmem-compiler-options-sycl-fpga )
-endif()
+#if( VECMEM_BUILD_SYCL_FPGA_LIBRARY )
+include( vecmem-compiler-options-sycl-fpga )
+#endif()
 
 # Set up the build of the VecMem SYCL library.
 vecmem_add_library( vecmem_sycl sycl
    # Memory management.
    "include/vecmem/memory/sycl/details/memory_resource_base.hpp"
-   "src/memory/sycl/details/memory_resource_base.sycl"
+   "src/memory/sycl/details/memory_resource_base.cpp"
    "include/vecmem/memory/sycl/device_memory_resource.hpp"
-   "src/memory/sycl/device_memory_resource.sycl"
+   "src/memory/sycl/device_memory_resource.cpp"
    "include/vecmem/memory/sycl/host_memory_resource.hpp"
-   "src/memory/sycl/host_memory_resource.sycl"
+   "src/memory/sycl/host_memory_resource.cpp"
    "include/vecmem/memory/sycl/shared_memory_resource.hpp"
-   "src/memory/sycl/shared_memory_resource.sycl"
+   "src/memory/sycl/shared_memory_resource.cpp"
    # Utilities.
    "include/vecmem/utils/sycl/copy.hpp"
-   "src/utils/sycl/copy.sycl"
+   "src/utils/sycl/copy.cpp"
    "include/vecmem/utils/sycl/async_copy.hpp"
-   "src/utils/sycl/async_copy.sycl"
+   "src/utils/sycl/async_copy.cpp"
    "include/vecmem/utils/sycl/queue_wrapper.hpp"
-   "src/utils/sycl/queue_wrapper.sycl"
+   "src/utils/sycl/queue_wrapper.cpp"
    "src/utils/sycl/get_queue.hpp"
-   "src/utils/sycl/get_queue.sycl"
+   "src/utils/sycl/get_queue.cpp"
    "src/utils/sycl/opaque_queue.hpp" )
 target_link_libraries( vecmem_sycl PUBLIC vecmem::core )
 set_target_properties( vecmem_sycl PROPERTIES LINKER_LANGUAGE CXX)   
+# DPC++ specific compiler options
+target_compile_options( vecmem_sycl PUBLIC
+            $<$<BOOL:${USE_FSYCL_OPTION}>:-fsycl>)
 
 # Hide the library's symbols by default.
 set_target_properties( vecmem_sycl PROPERTIES

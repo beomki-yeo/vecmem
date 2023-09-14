@@ -10,7 +10,8 @@
 #include "vecmem/utils/sycl/queue_wrapper.hpp"
 
 // SYCL include(s).
-#include <CL/sycl.hpp>
+//#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 namespace vecmem::sycl::details {
 

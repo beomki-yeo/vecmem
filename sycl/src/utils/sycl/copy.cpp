@@ -7,7 +7,8 @@
  */
 
 // SYCL include(s).
-#include <CL/sycl.hpp>
+//#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 // VecMem include(s).
 #include "get_queue.hpp"

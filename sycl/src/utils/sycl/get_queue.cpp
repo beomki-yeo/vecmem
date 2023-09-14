@@ -24,5 +24,4 @@ const cl::sycl::queue& get_queue(const vecmem::sycl::queue_wrapper& queue) {
     assert(queue.queue() != nullptr);
     return *(reinterpret_cast<const cl::sycl::queue*>(queue.queue()));
 }
-
 }  // namespace vecmem::sycl::details

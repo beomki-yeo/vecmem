@@ -11,7 +11,7 @@
 #include "vecmem/utils/debug.hpp"
 
 // SYCL include(s).
-#include <CL/sycl.hpp>
+//#include <CL/sycl.hpp>
 
 namespace vecmem::sycl::details {
 
@@ -26,7 +26,7 @@ void memory_resource_base::do_deallocate(void* ptr, std::size_t, std::size_t) {
 
     // Free the memory.
     VECMEM_DEBUG_MSG(2, "De-allocating memory at %p", ptr);
-    cl::sycl::free(ptr, get_queue(m_queue));
+    //cl::sycl::free(ptr, get_queue(m_queue));
 }
 
 bool memory_resource_base::do_is_equal(

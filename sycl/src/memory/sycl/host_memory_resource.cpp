@@ -11,13 +11,13 @@
 #include "vecmem/utils/debug.hpp"
 
 // SYCL include(s).
-#include <CL/sycl.hpp>
+//#include <CL/sycl.hpp>
 
 namespace vecmem::sycl {
 
 void* host_memory_resource::do_allocate(std::size_t nbytes,
                                         std::size_t alignment) {
-
+                                
     if (nbytes == 0) {
         return nullptr;
     }

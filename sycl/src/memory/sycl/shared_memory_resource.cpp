@@ -7,15 +7,15 @@
 
 // Local include(s).
 #include "../../utils/sycl/get_queue.hpp"
-#include "vecmem/memory/sycl/device_memory_resource.hpp"
+#include "vecmem/memory/sycl/shared_memory_resource.hpp"
 #include "vecmem/utils/debug.hpp"
 
 // SYCL include(s).
-#include <CL/sycl.hpp>
+//#include <CL/sycl.hpp>
 
 namespace vecmem::sycl {
 
-void* device_memory_resource::do_allocate(std::size_t nbytes,
+void* shared_memory_resource::do_allocate(std::size_t nbytes,
                                           std::size_t alignment) {
 
     if (nbytes == 0) {
@@ -23,7 +23,7 @@ void* device_memory_resource::do_allocate(std::size_t nbytes,
     }
 
     // Allocate the memory.
-    void* result = cl::sycl::aligned_alloc_device(alignment, nbytes,
+    void* result = cl::sycl::aligned_alloc_shared(alignment, nbytes,
                                                   details::get_queue(m_queue));
 
     // Check that the allocation succeeded.
@@ -33,7 +33,7 @@ void* device_memory_resource::do_allocate(std::size_t nbytes,
 
     // Let the user know what's happening.
     VECMEM_DEBUG_MSG(
-        2, "Allocated %ld bytes of (%ld aligned) device memory on \"%s\" at %p",
+        2, "Allocated %ld bytes of (%ld aligned) shared memory on \"%s\" at %p",
         nbytes, alignment,
         details::get_queue(m_queue)
             .get_device()

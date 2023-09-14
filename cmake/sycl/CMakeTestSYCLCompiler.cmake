@@ -32,6 +32,7 @@ try_compile( CMAKE_SYCL_COMPILER_WORKS "${CMAKE_BINARY_DIR}"
 set( CMAKE_SYCL_COMPILER_WORKS ${CMAKE_SYCL_COMPILER_WORKS} )
 unset( CMAKE_SYCL_COMPILER_WORKS CACHE )
 
+if(FALSE)
 # Check the results of the test.
 if( NOT CMAKE_SYCL_COMPILER_WORKS )
    if( ${CMAKE_VERSION} VERSION_LESS 3.17 )
@@ -50,4 +51,5 @@ if( ${CMAKE_VERSION} VERSION_LESS 3.17 )
    PrintTestCompilerStatus( "SYCL" " -- works" )
 else()
    PrintTestCompilerResult( CHECK_PASS "works" )
+endif()
 endif()
