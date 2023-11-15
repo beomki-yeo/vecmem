@@ -1,7 +1,7 @@
 /*
  * VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021-2022 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -9,10 +9,10 @@
 // Local include(s).
 #include "vecmem/memory/cuda/device_memory_resource.hpp"
 
-#include "../../utils/cuda_error_handling.hpp"
-#include "../../utils/cuda_wrappers.hpp"
-#include "../../utils/get_device_name.hpp"
-#include "../../utils/select_device.hpp"
+#include "../utils/cuda_error_handling.hpp"
+#include "../utils/cuda_wrappers.hpp"
+#include "../utils/get_device_name.hpp"
+#include "../utils/select_device.hpp"
 #include "vecmem/utils/debug.hpp"
 
 // CUDA include(s).
@@ -21,11 +21,13 @@
 namespace vecmem::cuda {
 
 device_memory_resource::device_memory_resource(int device)
-    : m_device(device >= 0 ? device : details::get_device()) {
+    : m_device(device == INVALID_DEVICE ? details::get_device() : device) {
 
     VECMEM_DEBUG_MSG(1, "Created device memory resource on: %s",
                      details::get_device_name(m_device).c_str());
 }
+
+device_memory_resource::~device_memory_resource() = default;
 
 void *device_memory_resource::do_allocate(std::size_t bytes, std::size_t) {
 

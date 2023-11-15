@@ -1,7 +1,7 @@
 /*
  * VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021-2022 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -21,21 +21,30 @@ namespace vecmem {
  * is a terminal resource which does nothing but wrap @c std::aligned_alloc and
  * @c std::free. It is state-free (on the relevant levels of abstraction).
  */
-class VECMEM_CORE_EXPORT host_memory_resource final
-    : public details::memory_resource_base {
+class host_memory_resource final : public details::memory_resource_base {
 
-private:
-    /// @name Function(s) implemented from @c vecmem::memory_resource
+public:
+    /// Default constructor
+    VECMEM_CORE_EXPORT host_memory_resource();
+    /// Destructor
+    VECMEM_CORE_EXPORT ~host_memory_resource();
+
+protected:
+    /// @name Function(s) implementing @c vecmem::memory_resource
     /// @{
 
     /// Allocate standard host memory
-    virtual void* do_allocate(std::size_t size, std::size_t alignment) override;
+    VECMEM_CORE_EXPORT
+    virtual void* do_allocate(std::size_t size,
+                              std::size_t alignment) override final;
     /// De-allocate a block of previously allocated memory
+    VECMEM_CORE_EXPORT
     virtual void do_deallocate(void* p, std::size_t size,
-                               std::size_t alignment) override;
+                               std::size_t alignment) override final;
     /// Compares @c *this for equality with @c other
+    VECMEM_CORE_EXPORT
     virtual bool do_is_equal(
-        const memory_resource& other) const noexcept override;
+        const memory_resource& other) const noexcept override final;
 
     /// @}
 

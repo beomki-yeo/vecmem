@@ -1,18 +1,20 @@
 /*
  * VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
 
+// Local include(s).
 #include "vecmem/memory/identity_memory_resource.hpp"
 
-#include "vecmem/memory/memory_resource.hpp"
-
 namespace vecmem {
+
 identity_memory_resource::identity_memory_resource(memory_resource &upstream)
     : m_upstream(upstream) {}
+
+identity_memory_resource::~identity_memory_resource() = default;
 
 void *identity_memory_resource::do_allocate(std::size_t size,
                                             std::size_t align) {
@@ -51,4 +53,5 @@ bool identity_memory_resource::do_is_equal(
 
     return o != nullptr && m_upstream.is_equal(o->m_upstream);
 }
+
 }  // namespace vecmem

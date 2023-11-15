@@ -1,7 +1,6 @@
-/*
- * VecMem project, part of the ACTS project (R&D line)
+/* VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021-2022 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -19,6 +18,10 @@
 #include <memory>
 
 namespace vecmem {
+
+host_memory_resource::host_memory_resource() = default;
+
+host_memory_resource::~host_memory_resource() = default;
 
 void *host_memory_resource::do_allocate(std::size_t bytes,
                                         std::size_t alignment) {
@@ -102,10 +105,7 @@ bool host_memory_resource::do_is_equal(
      * form of the underlying C library memory manager, but that is not
      * relevant for us.
      */
-    const host_memory_resource *c;
-    c = dynamic_cast<const host_memory_resource *>(&other);
-
-    return c != nullptr;
+    return (dynamic_cast<const host_memory_resource *>(&other) != nullptr);
 }
 
 }  // namespace vecmem

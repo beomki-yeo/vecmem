@@ -22,13 +22,13 @@ include( vecmem-compiler-options-sycl-fpga )
 vecmem_add_library( vecmem_sycl sycl
    # Memory management.
    "include/vecmem/memory/sycl/details/memory_resource_base.hpp"
-   "src/memory/sycl/details/memory_resource_base.cpp"
+   "src/memory/memory_resource_base.sycl"
    "include/vecmem/memory/sycl/device_memory_resource.hpp"
-   "src/memory/sycl/device_memory_resource.cpp"
+   "src/memory/device_memory_resource.sycl"
    "include/vecmem/memory/sycl/host_memory_resource.hpp"
-   "src/memory/sycl/host_memory_resource.cpp"
+   "src/memory/host_memory_resource.sycl"
    "include/vecmem/memory/sycl/shared_memory_resource.hpp"
-   "src/memory/sycl/shared_memory_resource.cpp"
+   "src/memory/shared_memory_resource.sycl"
    # Utilities.
    "include/vecmem/utils/sycl/copy.hpp"
    "src/utils/sycl/copy.cpp"

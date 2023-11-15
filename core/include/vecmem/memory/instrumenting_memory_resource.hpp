@@ -1,27 +1,31 @@
 /*
  * VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
 
 #pragma once
 
-#include <cstddef>
-#include <functional>
-#include <vector>
-
+// Local include(s).
 #include "vecmem/memory/details/memory_resource_base.hpp"
 #include "vecmem/memory/memory_resource.hpp"
 #include "vecmem/vecmem_core_export.hpp"
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
+// System include(s).
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace vecmem {
+
+// Forward declaration(s).
+namespace details {
+class instrumenting_memory_resource_impl;
+}
+
 /**
  * @brief This memory resource forwards allocation and deallocation requests to
  * the upstream resource while recording useful statistics and information
@@ -30,13 +34,41 @@ namespace vecmem {
  * This allocator is here to allow us to debug, to profile, to test, but also
  * to instrument user code.
  */
-class VECMEM_CORE_EXPORT instrumenting_memory_resource final
+class instrumenting_memory_resource final
     : public details::memory_resource_base {
+
 public:
+    /**
+     * @brief Constructs the debug memory resource.
+     *
+     * @param[in] upstream The upstream memory resource to use.
+     */
+    VECMEM_CORE_EXPORT
+    instrumenting_memory_resource(memory_resource& upstream);
+    /// Move constructor
+    VECMEM_CORE_EXPORT
+    instrumenting_memory_resource(instrumenting_memory_resource&& parent);
+    /// Disallow copying the memory resource
+    instrumenting_memory_resource(const instrumenting_memory_resource&) =
+        delete;
+
+    /// Destructor
+    VECMEM_CORE_EXPORT
+    ~instrumenting_memory_resource();
+
+    /// Move assignment operator
+    VECMEM_CORE_EXPORT
+    instrumenting_memory_resource& operator=(
+        instrumenting_memory_resource&& rhs);
+    /// Disallow copying the memory resource
+    instrumenting_memory_resource& operator=(
+        const instrumenting_memory_resource&) = delete;
+
     /**
      * @brief Structure describing a memory resource event.
      */
     struct VECMEM_CORE_EXPORT memory_event {
+
         /**
          * @brief Classify an event as an alloction or a deallocation.
          */
@@ -52,30 +84,29 @@ public:
          * @param[in] ns The time taken to perform the request in nanoseconds.
          */
         memory_event(type t, std::size_t s, std::size_t a, void* p,
-                     std::size_t ns)
-            : m_type(t), m_size(s), m_align(a), m_ptr(p), m_time(ns) {}
+                     std::size_t ns);
 
+        /// The type of event (allocation or deallocation).
         type m_type;
 
+        /// The size of the request.
         std::size_t m_size;
+        /// The alignment of the request.
         std::size_t m_align;
 
+        /// The pointer that was returned or deallocated.
         void* m_ptr;
 
+        /// The time taken to perform the request in nanoseconds.
         std::size_t m_time;
-    };
 
-    /**
-     * @brief Constructs the instrumenting memory resource.
-     *
-     * @param[in] upstream The upstream memory resource to use.
-     */
-    instrumenting_memory_resource(memory_resource& upstream);
+    };  // struct memory_event
 
     /**
      * @brief Return a list of memory allocation and deallocation events in
      * chronological order.
      */
+    VECMEM_CORE_EXPORT
     const std::vector<memory_event>& get_events(void) const;
 
     /**
@@ -87,6 +118,7 @@ public:
      * The function passed to this function should accept the size of the
      * request as the first argument, and the alignment as the second.
      */
+    VECMEM_CORE_EXPORT
     void add_pre_allocate_hook(std::function<void(std::size_t, std::size_t)> f);
 
     /**
@@ -100,6 +132,7 @@ public:
      * request as the first argument, the alignment as the second, and the
      * pointer to the allocated memory as the third argument.
      */
+    VECMEM_CORE_EXPORT
     void add_post_allocate_hook(
         std::function<void(std::size_t, std::size_t, void*)> f);
 
@@ -113,46 +146,27 @@ public:
      * allocate as its first argument, the size of the request as the second
      * argument, and the alignment as the third.
      */
+    VECMEM_CORE_EXPORT
     void add_pre_deallocate_hook(
         std::function<void(void*, std::size_t, std::size_t)> f);
 
 private:
-    virtual void* do_allocate(std::size_t, std::size_t) override;
+    /// @name Function(s) implementing @c vecmem::memory_resource
+    /// @{
 
-    virtual void do_deallocate(void* p, std::size_t, std::size_t) override;
+    /// Allocate memory with one of the underlying resources
+    VECMEM_CORE_EXPORT
+    virtual void* do_allocate(std::size_t, std::size_t) override final;
+    /// De-allocate a previously allocated memory block
+    VECMEM_CORE_EXPORT
+    virtual void do_deallocate(void* p, std::size_t,
+                               std::size_t) override final;
 
-    /*
-     * The upstream memory resource to which requests for allocation and
-     * deallocation will be forwarded.
-     */
-    memory_resource& m_upstream;
+    /// @}
 
-    /*
-     * This list stores a chronological set of requests that were passed to
-     * this memory resource.
-     */
-    std::vector<memory_event> m_events;
+    /// The implementation of the debug memory resource.
+    std::unique_ptr<details::instrumenting_memory_resource_impl> m_impl;
 
-    /*
-     * The list of all pre-allocation hooks.
-     */
-    std::vector<std::function<void(std::size_t, std::size_t)>>
-        m_pre_allocate_hooks;
+};  // class instrumenting_memory_resource
 
-    /*
-     * The list of all post-allocation hooks.
-     */
-    std::vector<std::function<void(std::size_t, std::size_t, void*)>>
-        m_post_allocate_hooks;
-
-    /*
-     * The list of all pre-deallocation hooks.
-     */
-    std::vector<std::function<void(void*, std::size_t, std::size_t)>>
-        m_pre_deallocate_hooks;
-};
 }  // namespace vecmem
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

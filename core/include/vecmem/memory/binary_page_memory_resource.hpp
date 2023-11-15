@@ -1,7 +1,7 @@
 /*
  * VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -10,17 +10,11 @@
 
 // Local include(s).
 #include "vecmem/memory/details/memory_resource_base.hpp"
+#include "vecmem/memory/memory_resource.hpp"
 #include "vecmem/vecmem_core_export.hpp"
 
 // System include(s).
 #include <memory>
-
-// Disable the warning(s) about inheriting from/using standard library types
-// with an exported class.
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif  // MSVC
 
 namespace vecmem {
 
@@ -40,14 +34,20 @@ struct binary_page_memory_resource_impl;
  * creates a binary tree of pages which can be either vacant, occupied, or
  * split.
  */
-class VECMEM_CORE_EXPORT binary_page_memory_resource
-    : public details::memory_resource_base {
+class binary_page_memory_resource final : public details::memory_resource_base {
+
 public:
     /**
      * @brief Initialize a binary page memory manager depending on an
      * upstream memory resource.
      */
-    binary_page_memory_resource(memory_resource &);
+    VECMEM_CORE_EXPORT
+    binary_page_memory_resource(memory_resource&);
+    /// Move constructor
+    VECMEM_CORE_EXPORT
+    binary_page_memory_resource(binary_page_memory_resource&& parent);
+    /// Disallow copying the memory resource
+    binary_page_memory_resource(const binary_page_memory_resource&) = delete;
 
     /**
      * @brief Deconstruct a binary page memory manager, freeing all
@@ -57,16 +57,27 @@ public:
      * class to know how to destruct
      * @c vecmem::details::binary_page_memory_resource_impl.
      */
+    VECMEM_CORE_EXPORT
     ~binary_page_memory_resource();
 
+    /// Move assignment operator
+    VECMEM_CORE_EXPORT
+    binary_page_memory_resource& operator=(binary_page_memory_resource&& rhs);
+    /// Disallow copying the memory resource
+    binary_page_memory_resource& operator=(const binary_page_memory_resource&) =
+        delete;
+
 private:
-    /// @name Functions implemented from @c vecmem::memory_resource
+    /// @name Function(s) implementing @c vecmem::memory_resource
     /// @{
 
     /// Allocate a blob of memory
-    virtual void *do_allocate(std::size_t, std::size_t) override;
+    VECMEM_CORE_EXPORT
+    virtual void* do_allocate(std::size_t, std::size_t) override final;
     /// De-allocate a previously allocated memory blob
-    virtual void do_deallocate(void *p, std::size_t, std::size_t) override;
+    VECMEM_CORE_EXPORT
+    virtual void do_deallocate(void* p, std::size_t,
+                               std::size_t) override final;
 
     /// @}
 
@@ -76,8 +87,3 @@ private:
 };  // class binary_page_memory_resource
 
 }  // namespace vecmem
-
-// Re-enable the warning(s).
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif  // MSVC

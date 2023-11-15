@@ -1,6 +1,6 @@
 /* VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021-2022 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -8,9 +8,9 @@
 // Local include(s).
 #include "vecmem/memory/hip/device_memory_resource.hpp"
 
-#include "../../utils/get_device.hpp"
-#include "../../utils/hip_error_handling.hpp"
-#include "../../utils/run_on_device.hpp"
+#include "../utils/get_device.hpp"
+#include "../utils/hip_error_handling.hpp"
+#include "../utils/run_on_device.hpp"
 #include "vecmem/utils/debug.hpp"
 
 // HIP include(s).
@@ -20,6 +20,8 @@ namespace vecmem::hip {
 
 device_memory_resource::device_memory_resource(int device)
     : m_device(device == INVALID_DEVICE ? details::get_device() : device) {}
+
+device_memory_resource::~device_memory_resource() = default;
 
 void* device_memory_resource::do_allocate(std::size_t nbytes, std::size_t) {
 

@@ -22,7 +22,7 @@ if (VECMEM_BUILD_SYCL_FPGA_LIBRARY)
    endif()
 endif()
 
-project( vecmem VERSION 0.27.0 LANGUAGES CXX )
+project( vecmem VERSION 1.1.0 LANGUAGES CXX )
 
 # Standard CMake include(s).
 include( GNUInstallDirs )

@@ -1,13 +1,13 @@
 /* VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021-2022 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
 #pragma once
 
 // Local include(s).
-#include "vecmem/memory/details/memory_resource_base.hpp"
+#include "vecmem/memory/memory_resource.hpp"
 #include "vecmem/utils/sycl/queue_wrapper.hpp"
 #include "vecmem/vecmem_sycl_export.hpp"
 
@@ -19,12 +19,15 @@ namespace vecmem::sycl::details {
 /// This class is used as base by all of the oneAPI/SYCL memory resource
 /// classes. It holds functionality that those classes all need.
 ///
-class VECMEM_SYCL_EXPORT memory_resource_base
-    : public vecmem::details::memory_resource_base {
+class memory_resource_base : public memory_resource {
 
 public:
     /// Constructor on top of a user-provided queue
+    VECMEM_SYCL_EXPORT
     memory_resource_base(const queue_wrapper& queue = {});
+    /// Destructor
+    VECMEM_SYCL_EXPORT
+    ~memory_resource_base();
 
 protected:
     /// The queue that the allocations are made for/on
@@ -35,11 +38,13 @@ private:
     /// @{
 
     /// Function performing the memory de-allocation
-    void do_deallocate(void* ptr, std::size_t nbytes,
-                       std::size_t alignment) override final;
+    VECMEM_SYCL_EXPORT
+    virtual void do_deallocate(void* ptr, std::size_t nbytes,
+                               std::size_t alignment) override final;
 
     /// Function comparing two memory resource instances
-    bool do_is_equal(
+    VECMEM_SYCL_EXPORT
+    virtual bool do_is_equal(
         const memory_resource& other) const noexcept override final;
 
     /// @}

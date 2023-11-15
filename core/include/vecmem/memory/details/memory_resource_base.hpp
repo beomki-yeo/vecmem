@@ -1,6 +1,6 @@
 /* VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -11,50 +11,34 @@
 #include "vecmem/memory/memory_resource.hpp"
 #include "vecmem/vecmem_core_export.hpp"
 
-// Disable the warning(s) about inheriting from/using standard library types
-// with an exported class.
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4275)
-#endif  // MSVC
-#ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
-#pragma nv_diagnostic push
-#pragma nv_diag_suppress 1388
-#endif  // CUDA disgnostics
+// System include(s).
+#include <cstddef>
 
 namespace vecmem::details {
 
 /// Base class for implementations of the @c vecmem::memory_resource interface
 ///
-/// This helper class is mainly meant to help with mitigating compiler warnings
-/// about exporting types that inherit from standard library types. But at the
-/// very least it also provides a default/conservative implementation for the
-/// @c vecmem::memory_resource::do_is_equal(...) function.
+/// It's mainly just a convenience class for providing a common implementation
+/// of the @c vecmem::memory_resource::is_equal(...) function for the derived
+/// types.
 ///
-class VECMEM_CORE_EXPORT memory_resource_base : public memory_resource {
-
-public:
-    /// Inherit the base class's constructor(s)
-    using vecmem::memory_resource::memory_resource;
+class memory_resource_base : public memory_resource {
 
 protected:
-    /// @name Function(s) implemented from @c vecmem::memory_resource
+    /// @name Function(s) implementing @c vecmem::memory_resource
     /// @{
 
-    /// Compares @c *this for equality with @c other
-    virtual bool do_is_equal(
-        const memory_resource &other) const noexcept override;
+    /// Compare the equality of @c *this memory resource with another
+    ///
+    /// @param other The other memory resource to compare with
+    /// @returns @c true if the two memory resources are equal, @c false
+    ///          otherwise
+    ///
+    VECMEM_CORE_EXPORT
+    virtual bool do_is_equal(const memory_resource& other) const noexcept;
 
     /// @}
 
 };  // class memory_resource_base
 
 }  // namespace vecmem::details
-
-// Re-enable the warning(s).
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif  // MSVC
-#ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
-#pragma nv_diagnostic pop
-#endif  // CUDA disgnostics

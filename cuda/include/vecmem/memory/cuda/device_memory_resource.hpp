@@ -1,7 +1,7 @@
 /*
  * VecMem project, part of the ACTS project (R&D line)
  *
- * (c) 2021 CERN for the benefit of the ACTS project
+ * (c) 2021-2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -9,7 +9,7 @@
 #pragma once
 
 // Local include(s).
-#include "vecmem/memory/details/memory_resource_base.hpp"
+#include "vecmem/memory/memory_resource.hpp"
 #include "vecmem/vecmem_cuda_export.hpp"
 
 /// @brief Namespace holding types that work on/with CUDA
@@ -22,10 +22,12 @@ namespace vecmem::cuda {
  * allocates, it does not try to manage memory in a smart way) that works
  * for CUDA device memory. Each instance is bound to a specific device.
  */
-class VECMEM_CUDA_EXPORT device_memory_resource final
-    : public vecmem::details::memory_resource_base {
+class device_memory_resource final : public memory_resource {
 
 public:
+    /// Invalid/default device identifier
+    static constexpr int INVALID_DEVICE = -1;
+
     /**
      * @brief Construct a CUDA device resource for a specific device.
      *
@@ -39,19 +41,27 @@ public:
      *
      * @param[in] device CUDA identifier for the device to use
      */
-    device_memory_resource(int device = -1);
+    VECMEM_CUDA_EXPORT
+    device_memory_resource(int device = INVALID_DEVICE);
+    /// Destructor
+    VECMEM_CUDA_EXPORT
+    ~device_memory_resource();
 
 private:
-    /// @name Function(s) implemented from @c vecmem::memory_resource
+    /// @name Function(s) implementing @c vecmem::memory_resource
     /// @{
 
     /// Allocate memory on the selected device
-    virtual void* do_allocate(std::size_t, std::size_t) override;
+    VECMEM_CUDA_EXPORT
+    virtual void* do_allocate(std::size_t, std::size_t) override final;
     /// De-allocate a previously allocated memory block on the selected device
-    virtual void do_deallocate(void* p, std::size_t, std::size_t) override;
+    VECMEM_CUDA_EXPORT
+    virtual void do_deallocate(void* p, std::size_t,
+                               std::size_t) override final;
     /// Compares @c *this for equality with @c other
+    VECMEM_CUDA_EXPORT
     virtual bool do_is_equal(
-        const memory_resource& other) const noexcept override;
+        const memory_resource& other) const noexcept override final;
 
     /// @}
 
